@@ -1,21 +1,39 @@
 {
   "name": "my-app",
   "version": "0.1.0",
+  "homepage": "https://NguyenKhanhNhut.github.io/MyChatApp",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/vertex-sdk": "^0.4.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@google/generative-ai": "^0.14.1",
+    "@mui/icons-material": "^5.15.21",
+    "@mui/material": "^5.15.21",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "date-fns": "^3.6.0",
+    "emoji-mart": "^5.6.0",
+    "framer-motion": "^11.2.12",
+    "gh-pages": "^6.1.1",
     "react": "^18.3.1",
+    "react-chat-elements": "^12.0.15",
     "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-syntax-highlighter": "^15.5.0",
+    "remark-gfm": "^4.0.0",
+    "web-vitals": "^2.1.4",
+    "yarn": "^1.22.22"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
