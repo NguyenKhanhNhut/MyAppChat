@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.REACT_APP_API_KEY);
 
 export async function getChatResponse(message, history) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-exp-0801" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
   const chat = model.startChat({
     safetySettings : [
