@@ -13,12 +13,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14' # hoặc phiên bản Node.js phù hợp với dự án của bạn
+          node-version: "14"
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build and Deploy
+      - name: Set up Git
+        run: |
+          git config --global user.name "NguyenNhut"
+          git config --global user.email "quyheo55@gmail.com"
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
         env:
           REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
-        run: npm run build && npm run deploy
+        run: npm run deploy
