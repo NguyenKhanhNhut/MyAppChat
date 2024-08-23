@@ -23,7 +23,9 @@ jobs:
           git config --global user.name "NguyenNhut"
           git config --global user.email "quyheo55@gmail.com"
 
-      - name: Build the project
+      - name: Build the project with API key
+        env:
+          REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
         run: npm run build
 
       - name: Deploy to GitHub Pages
