@@ -119,13 +119,13 @@ const MarkdownContainer = styled(Box)({
 });
 
 // Define the bouncing animation
-const bounce = keyframes`
-  0%, 80%, 100% {
-    transform: scale(0);
-  } 40% {
-    transform: scale(1);
-  }
-`;
+// const bounce = keyframes`
+//   0%, 80%, 100% {
+//     transform: scale(0);
+//   } 40% {
+//     transform: scale(1);
+//   }
+// `;
 
 // const TypingIndicator = styled(Box)({
 //   display: 'flex',
