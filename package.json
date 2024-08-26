@@ -1,7 +1,7 @@
 {
   "name": "my-app",
   "version": "0.1.0",
-"homepage": "https://nguyenkhanhnhut.github.io/MyAppChat",
+  "homepage": "https://nguyenkhanhnhut.github.io/MyAppChat",
   "private": true,
   "dependencies": {
     "@anthropic-ai/vertex-sdk": "^0.4.1",
@@ -52,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

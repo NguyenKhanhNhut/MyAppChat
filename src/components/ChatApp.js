@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box, IconButton, Typography, Card, CardContent,
   Container, ThemeProvider, createTheme, CssBaseline
@@ -127,28 +127,28 @@ const bounce = keyframes`
   }
 `;
 
-const TypingIndicator = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  '& > div': {
-    width: '8px',
-    height: '8px',
-    margin: '0 2px',
-    backgroundColor: '#4fc3f7',
-    borderRadius: '50%',
-    display: 'inline-block',
-    animation: `${bounce} 1.4s infinite both`,
-  },
-  '& > div:nth-of-type(1)': {
-    animationDelay: '0s',
-  },
-  '& > div:nth-of-type(2)': {
-    animationDelay: '0.2s',
-  },
-  '& > div:nth-of-type(3)': {
-    animationDelay: '0.4s',
-  },
-});
+// const TypingIndicator = styled(Box)({
+//   display: 'flex',
+//   alignItems: 'center',
+//   '& > div': {
+//     width: '8px',
+//     height: '8px',
+//     margin: '0 2px',
+//     backgroundColor: '#4fc3f7',
+//     borderRadius: '50%',
+//     display: 'inline-block',
+//     animation: `${bounce} 1.4s infinite both`,
+//   },
+//   '& > div:nth-of-type(1)': {
+//     animationDelay: '0s',
+//   },
+//   '& > div:nth-of-type(2)': {
+//     animationDelay: '0.2s',
+//   },
+//   '& > div:nth-of-type(3)': {
+//     animationDelay: '0.4s',
+//   },
+// });
 
 
 
