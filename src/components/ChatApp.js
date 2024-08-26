@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { styled } from '@mui/system';
 import { MdSend } from 'react-icons/md';
 import { getChatResponse } from './geminiService';
-// import { getChatResponse } from './claudeAI';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -51,6 +50,20 @@ const StyledInput = styled(Input)({
   borderRadius: '20px',
   padding: '10px 15px',
   backgroundColor: 'white',
+  fontFamily: 'inherit',  // Sử dụng font hiện tại của ứng dụng
+  '& .rce-input': {
+    lineHeight: '1.5',
+    minHeight: '40px',
+    maxHeight: '100px',
+    overflowY: 'auto',  // Cho phép cuộn dọc khi cần
+    resize: 'none',     // Không cho phép người dùng thay đổi kích thước
+    whiteSpace: 'pre-wrap',  // Đảm bảo xuống dòng tự động khi nội dung quá dài
+    fontFamily: 'inherit',  // Sử dụng font hiện tại của ứng dụng
+    scrollbarWidth: 'none',  // Ẩn thanh cuộn trên Firefox
+    '&::-webkit-scrollbar': {
+      display: 'none',  // Ẩn thanh cuộn trên Chrome, Safari, và Edge
+    },
+  },
   '&:hover': {
     backgroundColor: '#f0faff',
   },
@@ -59,12 +72,13 @@ const StyledInput = styled(Input)({
   },
 });
 
-const ChatBubble = styled(motion.div)(({ isUser }) => ({
+
+const ChatBubble = styled(({ isUser, ...rest }) => <motion.div {...rest} />)(({ isUser }) => ({
   maxWidth: '80%',
-  padding: '0px 12px', // Adjusted padding for a more compact look
+  padding: '0px 12px',
   borderRadius: '18px',
-  marginBottom: '5px', // Increased margin bottom for better spacing between messages
-  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', // Slightly increased shadow for better depth
+  marginBottom: '5px',
+  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
   wordBreak: 'break-word',
   backgroundColor: isUser ? '#4fc3f7' : 'white',
   color: isUser ? 'white' : 'black',
@@ -86,6 +100,7 @@ const MarkdownContainer = styled(Box)({
     marginBottom: '0.5em',
   },
   '& p': {
+    marginTop: '0.5em',
     marginBottom: '0.5em',
   },
   '& code': {
@@ -155,8 +170,11 @@ function ChatApp() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
 
-  useEffect(scrollToBottom, [messages]);
+//   useEffect(() => {
+//     scrollToBottom(); // Always scroll to bottom when messages update (if user sends a message)
+// }, [messages]);
 
   const handleSendMessage = async () => {
     if (inputMessage.trim() !== '') {
@@ -166,39 +184,45 @@ function ChatApp() {
         text: inputMessage,
         date: new Date(),
       };
+
       setMessages(prevMessages => [...prevMessages, userMessage]);
       setInputMessage('');
 
-      const typingMessage = {
-        position: 'left',
-        type: 'text',
-        text: 'Đợi xíu mấy má ui...',
-        date: new Date(),
-      };
-      setMessages(prevMessages => [...prevMessages, typingMessage]);
+      setTimeout(scrollToBottom, 100);
+
+      let botMessage = { position: 'left', type: 'text', text: '' };
+      setMessages(prevMessages => [...prevMessages, botMessage]);
 
       try {
-        const botReply = await getChatResponse(inputMessage, chatHistory);
+        const onStreamUpdate = (partialMessage) => {
+          setMessages(prevMessages => {
+            const updatedMessages = [...prevMessages];
+            updatedMessages[updatedMessages.length - 1].text = partialMessage;
+            return updatedMessages;
+          });
+        };
 
-        setMessages(prevMessages =>
-          prevMessages.filter(msg => msg !== typingMessage).concat({
-            position: 'left',
-            type: 'text',
-            text: botReply,
+        const fullResponse = await getChatResponse(inputMessage, chatHistory, onStreamUpdate);
+
+        setMessages(prevMessages => {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[updatedMessages.length - 1] = {
+            ...updatedMessages[updatedMessages.length - 1],
+            text: fullResponse,
             date: new Date(),
-          })
-        );
-        if (botReply) {
-          setChatHistory([
-            ...chatHistory,
-            { role: 'user', parts: [{ text: inputMessage }] },
-            { role: 'model', parts: [{ text: botReply }] },
-          ]);
-        }
+          };
+          return updatedMessages;
+        });
+
+        setChatHistory(prevChatHistory => [
+          ...prevChatHistory,
+          { role: 'user', parts: [{ text: inputMessage }] },
+          { role: 'model', parts: [{ text: fullResponse }] },
+        ]);
       } catch (error) {
         console.error('Lỗi khi gửi tin nhắn:', error);
         setMessages(prevMessages =>
-          prevMessages.filter(msg => msg !== typingMessage).concat({
+          prevMessages.filter(msg => msg !== botMessage).concat({
             position: 'left',
             type: 'text',
             text: 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.',
@@ -210,16 +234,6 @@ function ChatApp() {
   };
 
   const renderMessageContent = (message) => {
-    if (message.type === 'typing') {
-      return (
-        <TypingIndicator>
-          <div>.</div>
-          <div>.</div>
-          <div>.</div>
-        </TypingIndicator>
-      );
-    }
-
     return (
       <MarkdownContainer>
         <ReactMarkdown
@@ -248,8 +262,9 @@ function ChatApp() {
     );
   };
 
+
   const formatMessageDate = (date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
   };
 
   return (
@@ -302,6 +317,7 @@ function ChatApp() {
                   <StyledInput
                     placeholder="Nhập tin nhắn..."
                     multiline={false}
+                    rows={1}
                     onChange={(e) => setInputMessage(e.target.value)}
                     value={inputMessage}
                     inputStyle={{ flex: 1 }}
