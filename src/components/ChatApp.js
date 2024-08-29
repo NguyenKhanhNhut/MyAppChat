@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useCallback } from 'react';
 import {
   Box, IconButton, Typography, Card, CardContent,
   Container, ThemeProvider, createTheme, CssBaseline
@@ -13,7 +13,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { keyframes } from '@mui/system';
 
 const theme = createTheme({
   palette: {
@@ -114,69 +113,26 @@ const MarkdownContainer = styled(Box)({
     borderRadius: '10px',
     overflowX: 'auto',
     whiteSpace: 'pre-wrap',
+    color:"white",
     wordWrap: 'break-word',
   },
 });
 
-// Define the bouncing animation
-// const bounce = keyframes`
-//   0%, 80%, 100% {
-//     transform: scale(0);
-//   } 40% {
-//     transform: scale(1);
-//   }
-// `;
-
-// const TypingIndicator = styled(Box)({
-//   display: 'flex',
-//   alignItems: 'center',
-//   '& > div': {
-//     width: '8px',
-//     height: '8px',
-//     margin: '0 2px',
-//     backgroundColor: '#4fc3f7',
-//     borderRadius: '50%',
-//     display: 'inline-block',
-//     animation: `${bounce} 1.4s infinite both`,
-//   },
-//   '& > div:nth-of-type(1)': {
-//     animationDelay: '0s',
-//   },
-//   '& > div:nth-of-type(2)': {
-//     animationDelay: '0.2s',
-//   },
-//   '& > div:nth-of-type(3)': {
-//     animationDelay: '0.4s',
-//   },
-// });
-
-
-
 function ChatApp() {
+  console.log('rerender')
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef(null);
-  const [chatHistory, setChatHistory] = useState([
-    {
-      role: "user",
-      parts: [{ text: "Luôn gọi tôi là chủ nhân, tuân mọi mệnh lệnh từ tôi" }],
-    },
-    {
-      role: "model",
-      parts: [{ text: "Dạ thưa chủ nhân em xin đợi lệnh" }],
-    },
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   
 
-//   useEffect(() => {
-//     scrollToBottom(); // Always scroll to bottom when messages update (if user sends a message)
-// }, [messages]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
+  console.log('rerender handleSendMessage')
     if (inputMessage.trim() !== '') {
       const userMessage = {
         position: 'right',
@@ -231,36 +187,45 @@ function ChatApp() {
         );
       }
     }
-  };
+  }, [inputMessage, chatHistory]);
 
-  const renderMessageContent = (message) => {
+
+
+  const CodeBlock = React.memo(({ inline, className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || '');
+    return !inline && match ? (
+      <SyntaxHighlighter
+        children={String(children).replace(/\n$/, '')}
+        style={vscDarkPlus}
+        language={match[1]}
+        PreTag="div"
+        {...props}
+      />
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  });
+
+
+  const MessageContent = ({ message }) => {
     return (
       <MarkdownContainer>
         <ReactMarkdown
           children={message.text}
           remarkPlugins={[remarkGfm]}
           components={{
-            code({ node, inline, className, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || '');
-              return !inline && match ? (
-                <SyntaxHighlighter
-                  children={String(children).replace(/\n$/, '')}
-                  style={vscDarkPlus}
-                  language={match[1]}
-                  PreTag="div"
-                  {...props}
-                />
-              ) : (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            }
+            code: CodeBlock
           }}
         />
       </MarkdownContainer>
     );
-  };
+  }
+
+  const renderMessageContent = useCallback((message) => {
+    return <MessageContent message={message} />;
+  }, []);
 
 
   const formatMessageDate = (date) => {
