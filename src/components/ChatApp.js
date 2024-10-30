@@ -1,7 +1,6 @@
-import React, { useState, useRef , useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
-  Box, IconButton, Typography, Card, CardContent,
-  Container, ThemeProvider, createTheme, CssBaseline
+  Box, IconButton, Typography, ThemeProvider, createTheme, CssBaseline,Container
 } from '@mui/material';
 import { Input } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
@@ -17,83 +16,86 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4fc3f7',
+      main: '#A3D8F4', // Pastel Blue
+    },
+    secondary: {
+      main: '#F4A3C4', // Pastel Pink
     },
     background: {
-      default: '#e1f5fe',
+      default: '#F2F2F2', // Light Gray Background
+      paper: '#FFF1E6',   // Pastel Peach for input backgrounds
     },
+    text: {
+      primary: '#4C4C4C', // Soft Black for text
+    },
+  },
+  typography: {
+    fontFamily: '"Fira Code, monospace"',
   },
 });
 
 const ScrollableBox = styled(Box)({
-  height: 'calc(100vh - 180px)', // Adjust height to ensure all content is visible
+  height: 'calc(100vh - 80px)', // Adjusted height
   overflowY: 'auto',
   padding: '16px',
+  scrollbarWidth: 'none', // Hide scrollbar on Firefox
   '&::-webkit-scrollbar': {
-    width: '8px',
-  },
-  '&::-webkit-scrollbar-track': {
-    background: '#e1f5fe',
-    borderRadius: '10px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    background: '#4fc3f7',
-    borderRadius: '10px',
-  },
-  '&::-webkit-scrollbar-thumb:hover': {
-    background: '#0288d1',
+    display: 'none', // Hide scrollbar on Chrome, Safari, and Edge
   },
 });
 
 const StyledInput = styled(Input)({
-  borderRadius: '20px',
+  borderRadius: '50px', // Full-rounded input
   padding: '10px 15px',
-  backgroundColor: 'white',
-  fontFamily: 'inherit',  // Sử dụng font hiện tại của ứng dụng
+  backgroundColor: '#D3D3D3',
+  color: '#ffffff',
   '& .rce-input': {
+    backgroundColor: '#D3D3D3',
     lineHeight: '1.5',
     minHeight: '40px',
     maxHeight: '100px',
-    overflowY: 'auto',  // Cho phép cuộn dọc khi cần
-    resize: 'none',     // Không cho phép người dùng thay đổi kích thước
-    whiteSpace: 'pre-wrap',  // Đảm bảo xuống dòng tự động khi nội dung quá dài
-    fontFamily: 'inherit',  // Sử dụng font hiện tại của ứng dụng
-    scrollbarWidth: 'none',  // Ẩn thanh cuộn trên Firefox
+    overflowY: 'auto',
+    resize: 'none',
+    whiteSpace: 'pre-wrap',
+    color: '#666666',
+    scrollbarWidth: 'none',
     '&::-webkit-scrollbar': {
-      display: 'none',  // Ẩn thanh cuộn trên Chrome, Safari, và Edge
+      display: 'none',
     },
   },
   '&:hover': {
-    backgroundColor: '#f0faff',
+    // backgroundColor: '#512da8',
   },
   '&:focus': {
-    backgroundColor: '#e1f5fe',
+    backgroundColor: '#673ab7',
+  },
+  '&::placeholder': {
+    color: '#bdbdbd',
   },
 });
 
-
 const ChatBubble = styled(({ isUser, ...rest }) => <motion.div {...rest} />)(({ isUser }) => ({
-  maxWidth: '80%',
-  padding: '0px 12px',
-  borderRadius: '18px',
-  marginBottom: '5px',
-  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  maxWidth: '100%',
+  padding: '10px 20px',
+  borderRadius: '20px',
+  marginBottom: '10px',
   wordBreak: 'break-word',
-  backgroundColor: isUser ? '#4fc3f7' : 'white',
-  color: isUser ? 'white' : 'black',
+  backgroundColor: isUser ? '#C1E1C1' : '#F8D7A3', // Pastel Green for user, Pastel Yellow for bot
+  color: '#4C4C4C', // Soft Black for text in bubbles
   alignSelf: isUser ? 'flex-end' : 'flex-start',
 }));
-
+//example typescript with generic
 const TimeStamp = styled(Typography)({
   fontSize: '0.75rem',
-  color: '#999',
+  color: '#bdbdbd',
   marginBottom: '10px',
   alignSelf: 'center',
 });
 
 const MarkdownContainer = styled(Box)({
-  fontFamily: 'Roboto, sans-serif',
+  fontFamily: "Fira Code, monospace",
   lineHeight: '1.6',
+  color: '#666666',
   '& h1, & h2, & h3, & h4, & h5, & h6': {
     marginTop: '1em',
     marginBottom: '0.5em',
@@ -105,7 +107,6 @@ const MarkdownContainer = styled(Box)({
   '& code': {
     padding: '2px 4px',
     borderRadius: '4px',
-    fontFamily: 'monospace',
   },
   '& pre': {
     backgroundColor: '#2d2d2d',
@@ -118,21 +119,23 @@ const MarkdownContainer = styled(Box)({
   },
 });
 
+const formatMessageDate = (date) => {
+  return date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+};
+
 function ChatApp() {
-  console.log('rerender')
   const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const inputMessageRef = useRef();
   const messagesEndRef = useRef(null);
   const [chatHistory, setChatHistory] = useState([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  
-
 
   const handleSendMessage = useCallback(async () => {
-  console.log('rerender handleSendMessage')
+    const inputMessage = inputMessageRef.current.value;
+
     if (inputMessage.trim() !== '') {
       const userMessage = {
         position: 'right',
@@ -142,18 +145,21 @@ function ChatApp() {
       };
 
       setMessages(prevMessages => [...prevMessages, userMessage]);
-      setInputMessage('');
+      inputMessageRef.current.value = '';
 
       setTimeout(scrollToBottom, 100);
 
-      let botMessage = { position: 'left', type: 'text', text: '' };
+      let botMessage = { position: 'left', type: 'text', text: 'Vui lòng chờ em xíu.' };
+      await new Promise(resolve => setTimeout(resolve, 500));
       setMessages(prevMessages => [...prevMessages, botMessage]);
+      scrollToBottom()
 
       try {
         const onStreamUpdate = (partialMessage) => {
           setMessages(prevMessages => {
             const updatedMessages = [...prevMessages];
             updatedMessages[updatedMessages.length - 1].text = partialMessage;
+            // scrollToBottom()
             return updatedMessages;
           });
         };
@@ -177,19 +183,9 @@ function ChatApp() {
         ]);
       } catch (error) {
         console.error('Lỗi khi gửi tin nhắn:', error);
-        setMessages(prevMessages =>
-          prevMessages.filter(msg => msg !== botMessage).concat({
-            position: 'left',
-            type: 'text',
-            text: 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.',
-            date: new Date(),
-          })
-        );
       }
     }
-  }, [inputMessage, chatHistory]);
-
-
+  }, [chatHistory]);
 
   const CodeBlock = React.memo(({ inline, className, children, ...props }) => {
     const match = /language-(\w+)/.exec(className || '');
@@ -208,7 +204,6 @@ function ChatApp() {
     );
   });
 
-
   const MessageContent = ({ message }) => {
     return (
       <MarkdownContainer>
@@ -221,86 +216,60 @@ function ChatApp() {
         />
       </MarkdownContainer>
     );
-  }
+  };
 
   const renderMessageContent = useCallback((message) => {
     return <MessageContent message={message} />;
   }, []);
-
-
-  const formatMessageDate = (date) => {
-    return date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-  };
-
+ 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="sm" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Card elevation={3} sx={{ overflow: 'hidden', borderRadius: 4, bgcolor: 'background.paper', height: '90vh' }}>
-            <CardContent sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <motion.div
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
+      <Container maxWidth="md" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <ScrollableBox sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <React.Fragment key={index}>
+                <ChatBubble
+                  isUser={message.position === 'right'}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {renderMessageContent(message)}
+                </ChatBubble>
+                <TimeStamp>
+                  {formatMessageDate(message.date)}
+                </TimeStamp>
+              </React.Fragment>
+            ))}
+          </AnimatePresence>
+          <div ref={messagesEndRef} />
+        </ScrollableBox>
+        <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+          <StyledInput
+            placeholder="Nhập tin nhắn..."
+            multiline={true}
+            rows={1}
+            referance={inputMessageRef}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                handleSendMessage();
+              }
+            }}
+            inputStyle={{ flex: 1 }}
+            rightButtons={
+              <IconButton
+                color="primary"
+                onClick={handleSendMessage}
+                sx={{ borderRadius: '50%', ml: 1 }}
               >
-                <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ py: 2, bgcolor: 'primary.main', color: 'white' }}>
-                  Chat app
-                </Typography>
-              </motion.div>
-              <ScrollableBox sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <AnimatePresence>
-                  {messages.map((message, index) => (
-                    <React.Fragment key={index}>
-                      <ChatBubble
-                        isUser={message.position === 'right'}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {renderMessageContent(message)}
-                      </ChatBubble>
-                      <TimeStamp>
-                        {formatMessageDate(message.date)}
-                      </TimeStamp>
-                    </React.Fragment>
-                  ))}
-                </AnimatePresence>
-                <div ref={messagesEndRef} />
-              </ScrollableBox>
-              <motion.div
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} sx={{ p: 2, bgcolor: 'background.default', display: 'flex', alignItems: 'center' }}>
-                  <StyledInput
-                    placeholder="Nhập tin nhắn..."
-                    multiline={false}
-                    rows={1}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    value={inputMessage}
-                    inputStyle={{ flex: 1 }}
-                    rightButtons={
-                      <IconButton
-                        color="primary"
-                        onClick={handleSendMessage}
-                        sx={{ borderRadius: '50%', ml: 1 }}
-                      >
-                        <MdSend size={24} />
-                      </IconButton>
-                    }
-                  />
-                </Box>
-              </motion.div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <MdSend size={24} />
+              </IconButton>
+            }
+          />
+        </Box>
       </Container>
     </ThemeProvider>
   );
