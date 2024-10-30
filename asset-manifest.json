@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/MyAppChat/static/css/main.d5091a91.css",
-    "main.js": "/MyAppChat/static/js/main.8c1ec7f8.js",
+    "main.js": "/MyAppChat/static/js/main.df754dfe.js",
     "static/js/453.68693753.chunk.js": "/MyAppChat/static/js/453.68693753.chunk.js",
     "index.html": "/MyAppChat/index.html",
     "main.d5091a91.css.map": "/MyAppChat/static/css/main.d5091a91.css.map",
-    "main.8c1ec7f8.js.map": "/MyAppChat/static/js/main.8c1ec7f8.js.map",
+    "main.df754dfe.js.map": "/MyAppChat/static/js/main.df754dfe.js.map",
     "453.68693753.chunk.js.map": "/MyAppChat/static/js/453.68693753.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d5091a91.css",
-    "static/js/main.8c1ec7f8.js"
+    "static/js/main.df754dfe.js"
   ]
 }
