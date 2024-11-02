@@ -1567,10 +1567,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.4.tgz#1d459cee5031893a08a0e064c406ad2130cced7c"
   integrity sha512-dWO2pw8hhi+WrXq1YJy2yCuWoL20PddgGaqTgVe4cOS9Q6qklXCiA1tJEqX6BEwRNSCP84/afac9hd4MS+zEUA==
 
-"@google/generative-ai@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@google/generative-ai/-/generative-ai-0.14.1.tgz#a9dcdf0b929fb0fa8c072007d6461c1c3cfe1175"
-  integrity sha512-pevEyZCb0Oc+dYNlSberW8oZBm4ofeTD5wN01TowQMhTwdAbGAnJMtQzoklh6Blq2AKsx8Ox6FWa44KioZLZiA==
+"@google/generative-ai@^0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@google/generative-ai/-/generative-ai-0.21.0.tgz#a5011aab9e6082e706937b26ef23445933fa0d15"
+  integrity sha512-7XhUbtnlkSEZK15kN3t+tzIMxsbKm/dSkKBFalj+20NvPKe1kBY7mR2P7vuijEn+f06z5+A8bVGKO0v39cr6Wg==
 
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
