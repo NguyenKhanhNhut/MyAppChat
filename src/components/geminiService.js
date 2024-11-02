@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI , DynamicRetrievalMode} from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI('AIzaSyAkkLqskBSLvEFlLCfW5wL86rH4RzubH94');
+const genAI = new GoogleGenerativeAI(process.env.REACT_APP_API_KEY);
 
 export async function getChatResponse(message, history, onStreamUpdate) {
   const model = genAI.getGenerativeModel(
@@ -57,10 +57,10 @@ Luôn luôn ghi nhớ cậu Chủ là người là tạo ra em và đào tạo c
     tools: [
       {
         googleSearchRetrieval: {
-          dynamicRetrievalConfig: {
-            mode: DynamicRetrievalMode.MODE_DYNAMIC,
-            dynamicThreshold: 0.5,
-          },
+          // dynamicRetrievalConfig: {
+          //   mode: DynamicRetrievalMode.MODE_DYNAMIC,
+          //   dynamicThreshold: 0.5,
+          // },
         },
       },
     ],
